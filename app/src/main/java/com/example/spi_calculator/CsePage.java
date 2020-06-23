@@ -4,11 +4,19 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -17,12 +25,25 @@ public class CsePage extends AppCompatActivity {
     EditText csedaa,csese,cseob,cseci,csejt,csense,cseml,csemp,cseuv;
     Button cseget;
     TextView csespi;
-    ProgressBar pbr;
 
+    private AdView mAdView;
+    private InterstitialAd mInterstitialAd;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cse_page);
+
+        MobileAds.initialize(this, new OnInitializationCompleteListener() {
+            @Override
+            public void onInitializationComplete(InitializationStatus initializationStatus) {
+            }
+        });
+        mAdView = findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
+
+        mInterstitialAd = new InterstitialAd(CsePage.this);
+        mInterstitialAd.setAdUnitId("ca-app-pub-7504258254981283/4514983679");
 
         csedaa = findViewById(R.id.csedaa);
         csese = findViewById(R.id.csese);
@@ -34,12 +55,20 @@ public class CsePage extends AppCompatActivity {
         cseml = findViewById(R.id.cseml);
         cseuv = findViewById(R.id.cseuv);
         csespi = findViewById(R.id.csespi);
-        pbr = findViewById(R.id.progressBar2);
+
         cseget = findViewById(R.id.cseget);
 
         cseget.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                mInterstitialAd.loadAd(new AdRequest.Builder().build());
+                if (mInterstitialAd.isLoaded()) {
+                    mInterstitialAd.show();
+                } else {
+                    Log.d("TAG", "The interstitial wasn't loaded yet.");
+                }
+
                 String cdaa = csedaa.getText().toString().trim();
                 String cse = csese.getText().toString().trim();
                 String cob = cseob.getText().toString().trim();
